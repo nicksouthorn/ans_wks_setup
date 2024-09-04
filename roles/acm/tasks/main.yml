@@ -1,0 +1,8 @@
+# Load distro-specific variables
+- include_vars: "Debian.yml"
+  tags: always
+
+- block:
+
+  ## system setup
+  - import_tasks: system_setup/autofs.yml

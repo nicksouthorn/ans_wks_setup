@@ -1,0 +1,9 @@
+---
+- name: system setup | package cleanup | remove uneeded packages (debian)
+  tags: cleanup,packages,system,settings
+  package:
+    state: absent
+    name:
+      - cowsay
+      - nano
+    when: ansible_distribution in ["Debian","Ubuntu"]

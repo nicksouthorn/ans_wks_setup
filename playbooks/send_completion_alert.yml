@@ -1,0 +1,3 @@
+---
+- name: Notify ansible playbook completion
+  shell: "notify-send 'Ansible Notification!' 'Ansible Playbook Complete' --icon=face-angel"

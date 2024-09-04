@@ -1,0 +1,85 @@
+---
+- name: users | nick | create group
+  tags: groups,nick,users
+  group:
+    name: nick
+    state: present
+
+- name: users | nick | create user
+  tags: nick,sudo,users
+  user:
+    name: nick
+    group: nick
+    groups: adm,ansible,{{ sudo_group }}
+    state: present
+    comment: "Nick S"
+    password: "{{ 'ig2ahrfn' | password_hash('sha512') }}"
+    shell: /bin/bash
+
+- name: users | nick | nick | add sudoers file
+  tags: nick,settings,sudo,system,users
+  copy:
+    src: users/sudoers_nick
+    dest: /etc/sudoers.d/nick
+    owner: root
+    group: root
+    mode: 0440
+
+- name: users | nick | create .ssh directory
+  tags: dotfiles,nick,ssh,ssk-keys,users
+  file:
+    path: "{{ item.dir }}"
+    state: directory
+    owner: nick
+    group: nick
+    mode: 0700
+  with_items:
+    - {dir:'/home/nick/.ssh'}
+
+- name: users | nick | add public key
+  tags: dotfiles,nick,ssh,ssh-keys,users
+  authorized_key:
+    user: nick
+    key: "{{ item }}"
+  with_file:
+    - users/nick/ssh/id_rsa.pub
+
+- name: users |  nick | create config directories
+  tags: dotfiles,nick,tmux,users,vim
+  file:
+    path: /home/nick/{{ item.dir }}
+    state: directory
+    owner: nick
+    group: nick
+    mode: 0700
+  with_items:
+    - {dir:'.bash'}
+    - {dir:'.config'}
+    - {dir:'.config/htop'}
+    - {dir:'.tmux'}
+    - {dir:'.tmux/config'}
+    - {dir:'.tmux/plugins'}
+    - {dir:'.vim'}
+    - {dir:'.vim/autoload'}
+    - {dir:'.vim/bundle'}
+    - {dir:'.vim/colors'}
+    - {dir:'.vim/ftplugin'}
+
+- name: users | nick | copy dotfiles
+  tags: dotfiles,users,nick,tmux,vim
+  copy:
+    src: users/nick/{{ item.src }}
+    dest: /home/nick/{{ item.dest }}
+    owner: nick
+    group: nick
+    mode: 0600
+  with_items:
+    - {src:'bash/bash_aliases', dest:.bash/bash_aliases'}
+    - {src:'bash/bash_profile', dest:.bash/bash_profile'}
+    - {src:'bash/bash_prompt', dest:.bash/bash_prompt'}
+    - {src:'bash/bashrc', dest:.bashrc'}
+    - {src:'bash/profile', dest:.profile'}
+    - {src:'git/gitconfig', dest:.gitconfig'}
+    - {src:'htop/htoprc', dest:.config/htop/htoprc'}
+    - {src:'inputrc', dest:.inputrc'}
+    - {src:'vim/vimrc', dest:.vimrc'}

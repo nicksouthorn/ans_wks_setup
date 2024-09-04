@@ -1,0 +1,1 @@
+# /share -fstype=nfs4,soft,intr,rsize=8192,wsize=8192 pi-storage:/mnt/<<SSD>/<<SHARE>>
